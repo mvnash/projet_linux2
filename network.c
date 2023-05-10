@@ -4,6 +4,9 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
 
 #include "utils_v2.h"
 #include "network.h"
@@ -17,27 +20,31 @@ const int tabPorts[NBR_PORTS] = {
 	SERVER_PORT4,
 	SERVER_PORT5,
 	SERVER_PORT6,
-	SERVER_PORT3,
-	SERVER_PORT4,
-	SERVER_PORT5,
-	SERVER_PORT6};
+	SERVER_PORT7,
+	SERVER_PORT8,
+	SERVER_PORT9,
+	SERVER_PORT10};
 
-int[] testPorts(char *ip)
+int *testAndConnectPorts(char *ip)
 {
-	int sockfdTab[];
 	int indexTab = 0;
 
 	for (size_t i = 0; i < NBR_PORTS; i++)
 	{
 		int sockfd = ssocket();
-		int res = sconnect(serverIP, serverPort, sockfd);
-		if (res == 0){
-			sockfdTab[indexTab] = sockfd;
+		struct sockaddr_in addr;
+		memset(&addr, 0, sizeof(addr));
+		addr.sin_family = AF_INET;
+		addr.sin_port = htons(tabPorts[i]);
+		inet_aton(ip, &addr.sin_addr);
+		int res = connect(sockfd, (struct sockaddr *)&addr, sizeof(addr));
+		if (res == 0)
+		{
+			sockFdPortsConnectedTab[indexTab] = sockfd;
 			indexTab++;
 		}
 	}
-// TODO
-	return sockfdTab;
+	return sockFdPortsConnectedTab;
 }
 
 int initSocketServer(int port)
@@ -60,8 +67,12 @@ int initSocketServer(int port)
 	return sockfd;
 }
 
-int disconnectZombies()
+void disconnectZombies()
 {
-	return 0;
-	// TODO
+	for (size_t i = 0; i < sizeof(sockFdPortsConnectedTab); i++)
+	{
+		sclose(sockFdPortsConnectedTab[i]);
+	}
+	
+	return;
 }

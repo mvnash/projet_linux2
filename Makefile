@@ -32,6 +32,7 @@ clear :
 
 clean :
 	rm -f *.o
+	rm -f *.gch
 	rm -f zombie
 	rm -f controller
 	rm -f labo

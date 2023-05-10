@@ -5,11 +5,13 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include "network.h"
 #include "utils_v2.h"
 
 int main(int argc, char const *argv[])
 {
-    // TODO
+    int* usedPorts = testAndConnectPorts(argv[1]);
+    
     return 0;
 }
 
@@ -18,6 +20,7 @@ bool sendCommandToZombies(){
 }
 
 char* listenToResponse(){
+    // Fork pour que ca soit gerer dans un autre processus.
     return "todo";
 }
 

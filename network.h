@@ -14,14 +14,15 @@
 
 extern const int tabPorts[NBR_PORTS];
 
+static int* sockFdPortsConnectedTab;
+
 /**
  * PRE: servierIP : a valid IP address
- *      serverPort: a valid port number
- * POST: on success, connects a client socket to serverIP:serverPort ;
+ * POST: on success, test available ports and connects a client socket to serverIP:serverPort ;
  *       on failure, displays error cause and quits the program
  * RES: return socket file descriptor
  */
-int initSocketClient(char *serverIP, int serverPort);
+int *testAndConnectPorts(char *ip)
 
 /**
  * PRE:  port: a valid port number
@@ -35,6 +36,5 @@ int initSocketServer(int port);
 /**
  * PRE:  /
  * POST: on success, disconnect all zombies
- * RES:  number of zombies disconnected
  */
-int disconnectZombies();
+void disconnectZombies();
