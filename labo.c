@@ -8,8 +8,21 @@
 #include "utils_v2.h"
 #include "network.h"
 
+#define NB_ZOMBIES 2
+#define BUFFER_SIZE 256
+
+void startZombie(void *arg)
+{
+    int port = *(int*)arg;
+    char portStr[50];
+    sprintf(portStr, "%d", port);
+    execl("./zombie", "zombie", portStr, NULL);
+}
+
 int main(int argc, char const *argv[])
 {
+
+    int zombiesPID[NB_ZOMBIES];
 
     int portZombie1 = tabPorts[randomIntBetween(0, 9)];
     int portZombie2 = tabPorts[randomIntBetween(0, 9)];
@@ -18,23 +31,18 @@ int main(int argc, char const *argv[])
         portZombie2 = tabPorts[randomIntBetween(0, 9)];
     }
 
-    printf("Zombie 1 : Port %d\n", portZombie1);
-    printf("Zombie 2 : Port %d\n", portZombie2);
+    zombiesPID[0] = fork_and_run1(startZombie, &portZombie1);
+    zombiesPID[1] = fork_and_run1(startZombie, &portZombie2);
 
-    pid_t pid = sfork();
-
-    if (pid == 0)
+    char buffer[BUFFER_SIZE];
+    printf("CTRL-D pour tuer les zombies\n");
+    while (fgets(buffer, BUFFER_SIZE, stdin) != NULL)
     {
-        // FILS
-        char port1Str[50];
-        sprintf(port1Str, "./zombie %d", portZombie1);
-        system(port1Str);
+        buffer[strlen(buffer)] = '\0';
     }
-    else
+
+    for (size_t i = 0; i < NB_ZOMBIES; i++)
     {
-        // PERE
-        char port2Str[50];
-        sprintf(port2Str, "./zombie %d", portZombie2);
-        system(port2Str);
+        skill(zombiesPID[i], SIGINT);
     }
 }

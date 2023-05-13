@@ -13,6 +13,8 @@
 
 #define MAX_ZOMBIES 3
 
+static int indexTab = 0;
+
 const int tabPorts[NBR_PORTS] = {
 	SERVER_PORT1,
 	SERVER_PORT2,
@@ -27,7 +29,6 @@ const int tabPorts[NBR_PORTS] = {
 
 int testAndConnectPorts(const char *ip, int *sockFdPortsConnectedTab)
 {
-	int nbrSockFD = 0;
 	for (size_t i = 0; i < NBR_PORTS; i++)
 	{
 		int sockfd = ssocket();
@@ -40,15 +41,15 @@ int testAndConnectPorts(const char *ip, int *sockFdPortsConnectedTab)
 		if (res == 0)
 		{
 			printf("Connection établie sur le port : %d\n", tabPorts[i]);
-			sockFdPortsConnectedTab[nbrSockFD] = sockfd;
-			nbrSockFD++;
+			sockFdPortsConnectedTab[indexTab] = sockfd;
+			indexTab++;
 		}
 		else
 		{
 			sclose(sockfd);
 		}
 	}
-	return nbrSockFD;
+	return indexTab;
 }
 
 int initSocketServer(int port)
@@ -77,6 +78,4 @@ void disconnectZombies(int nbrToDisconnect, int *tabToDisconnect)
 	{
 		sclose(tabToDisconnect[i]);
 	}
-
-	return;
 }

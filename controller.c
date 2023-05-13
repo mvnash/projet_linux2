@@ -22,15 +22,13 @@ void sendCommandToZombies()
             swrite(sockFdPortsConnectedTab[i], command, strlen(command));
         }
     }
-
-    disconnectZombies(nbrSocketsConnected, sockFdPortsConnectedTab);
-    exit(0);
 }
 
 void listenToResponse()
 {
     struct pollfd fds[30];
     char buffer[2000];
+    int nbZombisConnected = nbrSocketsConnected;
 
     for (int i = 0; i < nbrSocketsConnected; i++)
     {
@@ -39,7 +37,7 @@ void listenToResponse()
         fds[i].events = POLLIN;
     }
 
-    while (true)
+    while (nbZombisConnected>0)
     {
         spoll(fds, nbrSocketsConnected, 10);
         for (int i = 0; i < nbrSocketsConnected; i++)
@@ -47,6 +45,14 @@ void listenToResponse()
             if (fds[i].revents & POLLIN)
             {
                 int nbChar = sread(fds[i].fd, buffer, 2000);
+
+                if (nbChar == 0)
+                {
+                    nbZombisConnected--;
+                    printf("Plus de zombies à écouter\n");
+                    skill(getppid(),SIGINT);
+                    exit(0);
+                }
 
                 swrite(1, buffer, nbChar);
             }
@@ -75,12 +81,14 @@ int main(int argc, char const *argv[])
     if (pid == 0)
     {
         // FILS
-        sendCommandToZombies();
+        listenToResponse();
     }
     else
     {
         // PERE
-        listenToResponse();
+        sendCommandToZombies();
+        disconnectZombies(nbrSocketsConnected, sockFdPortsConnectedTab);
+        skill(pid,SIGINT);
+        exit(0);
     }
-    return 0;
 }
