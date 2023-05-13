@@ -49,9 +49,8 @@ void siginthandler(int sig)
 {
   for (size_t i = 0; i < nbrSousProcess; i++)
   {
-    skill(sousProcessTab[i],SIGINT);
+    skill(sousProcessTab[i], SIGINT);
   }
-     
 }
 
 int main(int argc, char const *argv[])

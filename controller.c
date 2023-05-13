@@ -49,7 +49,7 @@ void listenToResponse()
                 if (nbChar == 0)
                 {
                     nbZombisConnected--;
-                    printf("Plus de zombies à écouter\n");
+                    printf("\nPlus de zombies à écouter\n");
                     skill(getppid(),SIGINT);
                     exit(0);
                 }
@@ -74,7 +74,7 @@ int main(int argc, char const *argv[])
         nbrSocketsConnected = testAndConnectPorts(ip, sockFdPortsConnectedTab);
     }
 
-    printf("Entrez des commandes à envoyer des zombies et les réponses s'afficheront ici\n");
+    printf("Entrez des commandes à envoyer aux zombies et les réponses s'afficheront ici\n");
 
     pid_t pid = sfork();
 
