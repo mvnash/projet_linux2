@@ -12,11 +12,11 @@
 
 #define NBR_PORTS 10
 
-extern const int tabPorts[NBR_PORTS];
-
 static int nbrSockFD;
 
 static int* sockFdPortsConnectedTab;
+
+extern const int tabPorts[NBR_PORTS];
 
 /**
  * PRE: serverIP : a valid IP address
@@ -24,7 +24,7 @@ static int* sockFdPortsConnectedTab;
  *       on failure, displays error cause and quits the program
  * RES: return socket file descriptor
  */
-void *testAndConnectPorts(const char *ip);
+void testAndConnectPorts(const char *ip);
 
 /**
  * PRE:  port: a valid port number

