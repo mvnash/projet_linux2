@@ -25,9 +25,10 @@ const int tabPorts[NBR_PORTS] = {
 	SERVER_PORT9,
 	SERVER_PORT10};
 
-void *testAndConnectPorts(char *ip)
+void *testAndConnectPorts(const char *ip)
 {
 	nbrSockFD = 0;
+	int *sockFdPortsConnectedTab = malloc(1* sizeof(int));
 
 	for (size_t i = 0; i < NBR_PORTS; i++)
 	{
@@ -40,6 +41,7 @@ void *testAndConnectPorts(char *ip)
 		int res = connect(sockfd, (struct sockaddr *)&addr, sizeof(addr));
 		if (res == 0)
 		{
+			sockFdPortsConnectedTab = realloc(sockFdPortsConnectedTab,nbrSockFD+1*sizeof(int));
 			sockFdPortsConnectedTab[nbrSockFD] = sockfd;
 			nbrSockFD++;
 		}

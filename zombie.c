@@ -54,7 +54,7 @@ int getPort(int nbArg, const char *const tabArg[])
 
 int main(int argc, char const *argv[])
 {
-  int sockfd = initSocketServer(getPort(argc, *argv));
+  int sockfd = initSocketServer(getPort(argc, argv));
 
   while (1)
   {
@@ -62,5 +62,9 @@ int main(int argc, char const *argv[])
     startShell(socketForThisAccept);
   }
 
+  // Ces printf sont inutiles mais c'est pour eviter de dire que ces variables sont declarées mais pas utilisées dans zombie
+  // Sinon ca compile pas
+  printf("%d", nbrSockFD);
+  printf("%d", sockFdPortsConnectedTab[0]);
   return 0;
 }
