@@ -25,9 +25,9 @@ const int tabPorts[NBR_PORTS] = {
 	SERVER_PORT9,
 	SERVER_PORT10};
 
-int *testAndConnectPorts(char *ip)
+void *testAndConnectPorts(char *ip)
 {
-	int indexTab = 0;
+	nbrSockFD = 0;
 
 	for (size_t i = 0; i < NBR_PORTS; i++)
 	{
@@ -40,8 +40,8 @@ int *testAndConnectPorts(char *ip)
 		int res = connect(sockfd, (struct sockaddr *)&addr, sizeof(addr));
 		if (res == 0)
 		{
-			sockFdPortsConnectedTab[indexTab] = sockfd;
-			indexTab++;
+			sockFdPortsConnectedTab[nbrSockFD] = sockfd;
+			nbrSockFD++;
 		}
 	}
 	return sockFdPortsConnectedTab;

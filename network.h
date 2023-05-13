@@ -14,15 +14,17 @@
 
 extern const int tabPorts[NBR_PORTS];
 
+extern int nbrSockFD;
+
 static int* sockFdPortsConnectedTab;
 
 /**
- * PRE: servierIP : a valid IP address
+ * PRE: serverIP : a valid IP address
  * POST: on success, test available ports and connects a client socket to serverIP:serverPort ;
  *       on failure, displays error cause and quits the program
  * RES: return socket file descriptor
  */
-int *testAndConnectPorts(char *ip)
+void *testAndConnectPorts(char *ip);
 
 /**
  * PRE:  port: a valid port number
