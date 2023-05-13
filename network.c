@@ -25,11 +25,9 @@ const int tabPorts[NBR_PORTS] = {
 	SERVER_PORT9,
 	SERVER_PORT10};
 
-void testAndConnectPorts(const char *ip)
+int testAndConnectPorts(const char *ip, int *sockFdPortsConnectedTab)
 {
-	nbrSockFD = 0;
-	int *sockFdPortsConnectedTab = malloc(1 * sizeof(int));
-
+	int nbrSockFD = 0;
 	for (size_t i = 0; i < NBR_PORTS; i++)
 	{
 		int sockfd = ssocket();
@@ -41,12 +39,16 @@ void testAndConnectPorts(const char *ip)
 		int res = connect(sockfd, (struct sockaddr *)&addr, sizeof(addr));
 		if (res == 0)
 		{
-			sockFdPortsConnectedTab = realloc(sockFdPortsConnectedTab, nbrSockFD + 1 * sizeof(int));
 			printf("Connection établie sur le port : %d\n", tabPorts[i]);
 			sockFdPortsConnectedTab[nbrSockFD] = sockfd;
 			nbrSockFD++;
 		}
+		else
+		{
+			sclose(sockfd);
+		}
 	}
+	return nbrSockFD;
 }
 
 int initSocketServer(int port)
@@ -69,11 +71,11 @@ int initSocketServer(int port)
 	return sockfd;
 }
 
-void disconnectZombies()
+void disconnectZombies(int nbrToDisconnect, int *tabToDisconnect)
 {
-	for (size_t i = 0; i < sizeof(sockFdPortsConnectedTab); i++)
+	for (size_t i = 0; i < nbrToDisconnect; i++)
 	{
-		sclose(sockFdPortsConnectedTab[i]);
+		sclose(tabToDisconnect[i]);
 	}
 
 	return;

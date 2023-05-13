@@ -12,19 +12,15 @@
 
 #define NBR_PORTS 10
 
-static int nbrSockFD;
-
-static int* sockFdPortsConnectedTab;
-
 extern const int tabPorts[NBR_PORTS];
 
 /**
  * PRE: serverIP : a valid IP address
  * POST: on success, test available ports and connects a client socket to serverIP:serverPort ;
  *       on failure, displays error cause and quits the program
- * RES: return socket file descriptor
+ * RES: return number socket file descriptor
  */
-void testAndConnectPorts(const char *ip);
+int testAndConnectPorts(const char *ip, int *sockFdPortsConnectedTab);
 
 /**
  * PRE:  port: a valid port number
@@ -34,9 +30,9 @@ void testAndConnectPorts(const char *ip);
  */
 int initSocketServer(int port);
 
-
 /**
- * PRE:  /
+ * PRE:  int : nbr to disconnect
+ *       int* tab with socketsFD to disconnect
  * POST: on success, disconnect all zombies
  */
 void disconnectZombies();

