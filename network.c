@@ -56,19 +56,13 @@ int initSocketServer(int port)
 {
 	int sockfd = ssocket();
 
-	/* no socket error */
-
-	// setsockopt -> to avoid Address Already in Use
-	// to do before bind !
 	int option = 1;
 	setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(int));
 
 	sbind(port, sockfd);
 
-	/* no bind error */
 	slisten(sockfd, MAX_ZOMBIES);
 
-	/* no listen error */
 	return sockfd;
 }
 

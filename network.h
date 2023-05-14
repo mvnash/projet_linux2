@@ -10,29 +10,34 @@
 #define SERVER_PORT9 9509
 #define SERVER_PORT10 9510
 
+#define MIN_INDEX_TAB_PORTS 0
+#define MAX_INDEX_TAB_PORTS 9
 #define NBR_PORTS 10
 
 extern const int tabPorts[NBR_PORTS];
 
 /**
- * PRE: serverIP : a valid IP address
- * POST: on success, test available ports and connects a client socket to serverIP:serverPort ;
- *       on failure, displays error cause and quits the program
- * RES: return number socket file descriptor
+ * PRE: ip : une adresse ip valide.
+ *      sockFdPortsConnectedTab : tableau où ajouter les sockFD
+ * POST: Teste les ports disponibles et s'y connecte.
+ * Met à jour le tableau en parametre.
+ *       si echec: affiche une erreur
+ * RES: return le nombre de sockFD connectés
  */
 int testAndConnectPorts(const char *ip, int *sockFdPortsConnectedTab);
 
 /**
- * PRE:  port: a valid port number
- * POST: on success, binds a socket to 0.0.0.0:port and listens to it ;
- *       on failure, displays error cause and quits the program
- * RES:  return socket file descriptor
+ * PRE:  port: un numéro de port valide
+ * POST: bind un socket à 0.0.0.0:port et ecoute dessus
+ *       si echec: affiche une erreur
+ * RES:  return le socketFD
  */
 int initSocketServer(int port);
 
 /**
- * PRE:  int : nbr to disconnect
- *       int* tab with socketsFD to disconnect
- * POST: on success, disconnect all zombies
+ * PRE:  int nbrToDisconnect: nombre de sockets à fermer
+ *       int* tabToDisconnect: tableau contenant les sockets à fermer
+ * POST: si succes, deconnecte tous les zombies
+ *       si echec: affiche une erreur
  */
-void disconnectZombies();
+void disconnectZombies(int nbrToDisconnect, int *tabToDisconnect);
